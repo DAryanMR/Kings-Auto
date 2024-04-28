@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cost Page</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- jQuery library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div
+      class="jumbotron container"
+      style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+    >
+      <form id="dynamic-form" action="{% url 'create_cost' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group row">
+          <div class="col-sm-2">
+            <h2>Cost</h2>
+          </div>
+          <label for="cost_date" class="col-sm-2 col-form-label"
+            >Cost Date:</label
+          >
+          <div class="col-sm-2">
+            <input
+              required
+              type="date"
+              id="cost_date"
+              name="cost_date"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div id="dynamic-rows">
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label">Cost Name</label>
+              <label class="col-sm-2 col-form-label">Amount</label>
+            </div>
+
+            {% for i in "1" %}
+
+            <div class="form-group row">
+              <div class="col-sm-4">
+                <input
+                  type="text"
+                  id="cost_name{{ forloop.counter }}"
+                  name="cost_name{{ forloop.counter }}"
+                  placeholder="Cost Name"
+                  class="form-control"
+                />
+              </div>
+              <div class="col-sm-2">
+                <input
+                  required
+                  type="number"
+                  id="total{{ forloop.counter }}"
+                  name="total{{ forloop.counter }}"
+                  placeholder="Total"
+                  oninput="calculateTotal(this)"
+                  class="form-control"
+                />
+              </div>
+              <div class="col-sm-2">
+                <span class="btn btn-danger" onclick="removeRow(this)"
+                  >Remove</span
+                >
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div class="form-group row">
+            <div class="col-sm-2">
+              <button
+                type="button"
+                id="add-btn"
+                name="add-btn"
+                class="btn btn-primary"
+                onclick="addRow()"
+              >
+                Add Row
+              </button>
+            </div>
+            <div class="col-sm-2">
+              <label for="grand-total" class="col-form-label">Total:</label>
+            </div>
+            <div class="col-sm-2">
+              <input type="text" id="grand-total" class="form-control" />
+            </div>
+            <div class="col-sm-2">
+              <button
+                id="confirm-button"
+                name="confirm-button"
+                type="submit"
+                class="btn btn-success"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% include 'main/footer.html' %}
+    <script>
+      // Get the current date in the format "YYYY-MM-DD"
+      var currentDate = new Date().toISOString().slice(0, 10);
+
+      // Set the default value of the input field to the current date
+      document.getElementById("cost_date").value = currentDate;
+
+      // Flag to indicate if the form has unsaved changes
+      let isFormDirty = false;
+
+      // Function to set the form as dirty if any input has a value
+      function setFormDirty() {
+        isFormDirty = true;
+      }
+
+      // Add event listeners to existing inputs and selects
+      function addListenersToInputs(inputs) {
+        inputs.forEach((input) => {
+          input.addEventListener("input", setFormDirty);
+          input.addEventListener("change", setFormDirty);
+        });
+      }
+
+      // Initialize listeners for existing form inputs
+      const formInputs = document.querySelectorAll(
+        "#dynamic-form input, #dynamic-form select"
+      );
+      addListenersToInputs(formInputs);
+
+      // Add event listener for the beforeunload event to display a confirmation dialog if form is dirty
+      window.addEventListener("beforeunload", (e) => {
+        if (isFormDirty) {
+          const confirmationMessage =
+            "You have unsaved changes. Are you sure you want to leave?";
+          e.returnValue = confirmationMessage; // For cross-browser compatibility
+          return confirmationMessage;
+        }
+      });
+
+      // Reset the flag when the form is successfully submitted
+      document.getElementById("dynamic-form").addEventListener("submit", () => {
+        isFormDirty = false;
+      });
+
+      function calculateTotal(selectElement) {
+        var total = 0;
+        var row = selectElement.parentNode;
+        var row_amt = parseFloat(
+          row.querySelector('input[type="number"]').value
+        );
+        total += row_amt;
+
+        calculateGrandTotal();
+      }
+
+      function calculateGrandTotal() {
+        var totalInputs = document.querySelectorAll('input[name^="total"]');
+        var grandTotal = 0;
+
+        totalInputs.forEach(function (input) {
+          var totalValue = parseFloat(input.value);
+          if (!isNaN(totalValue)) {
+            grandTotal += totalValue;
+          }
+        });
+
+        var grandTotalInput = document.getElementById("grand-total");
+        if (!grandTotalInput) {
+          // Create the grand total input field if it doesn't exist
+          grandTotalInput = document.createElement("input");
+          grandTotalInput.type = "text";
+          grandTotalInput.id = "grand-total";
+          grandTotalInput.readonly = true;
+
+          // Find the "Add Row" button
+          var addButton = document.getElementById("add-btn");
+
+          // Get the parent container of the "Add Row" button
+          var parentContainer = addButton.parentNode;
+
+          // Create a new div element for the grand total input field and its label
+          var grandTotalDiv = document.createElement("div");
+          grandTotalDiv.classList.add("column");
+
+          // Create a label for the grand total input field
+          var grandTotalLabel = document.createElement("label");
+          grandTotalLabel.textContent = "Grand Total: ";
+
+          // Append the label and input field to the div
+          grandTotalDiv.appendChild(grandTotalLabel);
+          grandTotalDiv.appendChild(grandTotalInput);
+
+          // Insert the div after the "Add Row" button
+          parentContainer.insertBefore(grandTotalDiv, addButton.nextSibling);
+        }
+
+        grandTotalInput.value = grandTotal.toFixed(2);
+      }
+
+      // function updateGrandGrandTotal() {
+      //   var grandTotal = parseFloat(
+      //     document.getElementById("grand-total").value
+      //   );
+      //   document.getElementById("grand-grand-total").value =
+      //     grandTotal.toFixed(2);
+      // }
+
+      // Function to add a new row dynamically
+      function addRow() {
+        // Get the container element for dynamic rows
+        var dynamicRowsContainer = document.getElementById("dynamic-rows");
+
+        // Create a new div element for the row
+        var newRow = document.createElement("div");
+        newRow.className = "form-group row";
+
+        // Generate a unique ID for the row
+        var uniqueId = Date.now();
+
+        // Create the first column
+        var firstCol = document.createElement("div");
+        firstCol.className = "col-sm-4";
+        var costNameInput = document.createElement("input");
+        // costNameInput.required = true;
+        costNameInput.type = "text";
+        costNameInput.id = "cost_name" + uniqueId;
+        costNameInput.name = "cost_name" + uniqueId;
+        costNameInput.placeholder = "Cost Name";
+        costNameInput.className = "form-control";
+        firstCol.appendChild(costNameInput);
+        newRow.appendChild(firstCol);
+
+        // Create the second column
+        var secondCol = document.createElement("div");
+        secondCol.className = "col-sm-2";
+        var totalInput = document.createElement("input");
+        totalInput.required = true;
+        totalInput.type = "number";
+        totalInput.id = "total" + uniqueId;
+        totalInput.name = "total" + uniqueId;
+        totalInput.placeholder = "Total";
+        totalInput.oninput = function () {
+          calculateTotal(this);
+        };
+        totalInput.className = "form-control";
+        secondCol.appendChild(totalInput);
+        newRow.appendChild(secondCol);
+
+        // Create the third column
+        var thirdCol = document.createElement("div");
+        thirdCol.className = "col-sm-2";
+        var removeBtn = document.createElement("span");
+        removeBtn.className = "btn btn-danger remove-row-btn";
+        removeBtn.onclick = function () {
+          removeRow(this);
+        };
+        removeBtn.textContent = "Remove";
+        thirdCol.appendChild(removeBtn);
+        newRow.appendChild(thirdCol);
+
+        // Append the new row to the container
+        dynamicRowsContainer.appendChild(newRow);
+
+        // Add listeners to the new inputs in the row
+        const newInputs = newRow.querySelectorAll("input, select");
+        addListenersToInputs(newInputs);
+      }
+
+      function removeRow(removeButton) {
+        var row = removeButton.closest(".form-group.row");
+        row.parentNode.removeChild(row);
+        calculateGrandTotal();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+{% load static %}
+
+<!-- Include Bootstrap CSS -->
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
+
+<!-- Include jQuery
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<!-- Include Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<style>
+  .dropdown-menu {
+    display: none; /* Hide the dropdown menu by default */
+  }
+
+  .nav-link:hover + .dropdown-menu,
+  .dropdown-menu:hover {
+    display: block; /* Display the dropdown menu when the link or the dropdown menu itself is hovered */
+  }
+</style>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <!-- Links -->
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item dropdown">
+      <a
+        class="nav-link dropdown-toggle"
+        href="#"
+        id="navbarDropdownMenuLink"
+        role="button"
+      >
+        Menu
+      </a>
+      <ul
+        id="dropdownMenu"
+        class="dropdown-menu"
+        aria-labelledby="navbarDropdownMenuLink"
+      >
+        <li><a class="dropdown-item" href="{% url 'stuff' %}">Stuff</a></li>
+        <li><a class="dropdown-item" href="{% url 'service' %}">Service</a></li>
+        <li><a class="dropdown-item" href="{% url 'item' %}">Item</a></li>
+        <li><a class="dropdown-item" href="{% url 'stock' %}">Stock</a></li>
+        <li><a class="dropdown-item" href="{% url 'sale' %}">Sale</a></li>
+        <li><a class="dropdown-item" href="{% url 'cost' %}">Cost</a></li>
+        <li><a class="dropdown-item" href="{% url 'salary' %}">Salary</a></li>
+        <li><a class="dropdown-item" href="{% url 'bill' %}">Bill</a></li>
+        <li>
+          <a class="dropdown-item" href="{% url 'job_card' %}">Job Card</a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'reports' %}">Report</a>
+    </li>
+  </ul>
+
+  <a class="navbar-brand mx-auto" href="{% url 'sale' %}">
+    <img
+      src="{% static 'logo_zoom.jpg' %}"
+      alt="Logo"
+      class="logo-image"
+      style="width: 70px; height: 50px"
+    />
+    Kings Auto Complex</a
+  >
+
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'index' %}">LogOut</a>
+    </li>
+  </ul>
+</nav>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  var timeout;
+
+  $(document).ready(function () {
+    $("#navbarDropdownMenuLink").mouseenter(function () {
+      clearTimeout(timeout);
+      $("#dropdownMenu").show();
+    });
+
+    $("#navbarDropdownMenuLink, #dropdownMenu").mouseleave(function () {
+      timeout = setTimeout(function () {
+        $("#dropdownMenu").hide();
+      }, 500);
+    });
+
+    $("#dropdownMenu").mouseenter(function () {
+      clearTimeout(timeout);
+    });
+  });
+</script>

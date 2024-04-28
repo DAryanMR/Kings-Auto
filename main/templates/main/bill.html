@@ -1,0 +1,553 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <style>
+      /* .header-img {
+        position: relative;
+      }
+
+      .image-cover {
+        position: relative;
+        background-image: url("{% static 'sign.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        width: auto;
+      } */
+      .main {
+        background-image: url("{% static 'sign.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 15vh; /* Adjust the height of the container as needed */
+        width: 100%; /* Adjust the width of the container as needed */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Adjust layout for printing */
+      @media print {
+        .row .col-md-2 {
+          display: inline-block;
+          width: 30%;
+        }
+        .row .col-md-8 {
+          display: inline-block;
+          width: 70%;
+        }
+        .main {
+          background-image: url("{% static 'sign.jpg' %}");
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          height: 5vh;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Allow text to wrap onto multiple lines */
+        .col-md-6 {
+          width: 50%;
+          flex-basis: 50%;
+        }
+
+        /* Hide input boxes and only show text */
+        input[type="text"] {
+          border: none; /* Hide the input fields */
+        }
+
+        /* Hide delete button */
+        .delete-row {
+          display: none !important;
+        }
+
+        /* Hide navbar */
+        .navbar {
+          display: none;
+        }
+
+        /* Hide the footer */
+        footer {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% include 'main/navbar.html' %}
+
+    <div
+      class="jumbotron container justify-content-center"
+      style="background-color: white"
+    >
+      <div
+        class="container"
+        style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+      >
+        <div
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+          class="main"
+        ></div>
+        <div class="text-center mb-3">
+          <h5><u>ESTIMATE / QUOTATION</u></h5>
+        </div>
+        <div class="text-center mb-3">
+          <h3><strong>Kings Auto Complex</strong></h3>
+        </div>
+        <div class="text-center mb-3" style="font-size: 0.75rem">
+          (Beside Kolka CNG Pump, Shagorika, P.C Road, Chattogram.)
+        </div>
+
+        <div class="row" style="text-align: left">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-2">
+                <label for="Ref">Ref:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="ref" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="date">Date:</label>
+              </div>
+              <div class="col-md-8">
+                <span id="date" style="font-size: 0.75rem">
+                  <!-- This span will hold today's date -->
+                </span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="estimateNo">Estimate No:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="estimateNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="name">Name:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="name" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="address">Address:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="address" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="phone">Phone:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="phone" />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <!-- Second column content here -->
+            <div class="row">
+              <div class="col-md-2">
+                <label for="chassisNo">Chassis No:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="chassisNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="vehicleName">Vehicle Name:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="vehicleName" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="modelYear">Model Year:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="modelYear" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="model">Model:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="model" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="engineNo">Engine No:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="engineNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="vehicleReg">Vehicle Reg:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="vehicleReg" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="container"
+        style="
+          border: 1px solid black;
+          padding-top: 3%;
+          padding-bottom: 3%;
+          text-align: left;
+        "
+      >
+        <!-- Table -->
+        <table class="table mt-4 table-hover" style="width: 90%">
+          <thead>
+            <tr>
+              <th scope="col">SL NO.</th>
+              <th scope="col">Description</th>
+              <th scope="col">Service</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Parts</th>
+              <th scope="col">Taka</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Add table rows with input fields here -->
+            <tr>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="number"
+                  class="form-control"
+                  value="1"
+                />
+              </td>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="text"
+                  class="form-control"
+                  value="Description"
+                />
+              </td>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="number"
+                  class="form-control"
+                  value="0.00"
+                />
+              </td>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="text"
+                  class="form-control"
+                  value="0PCS"
+                />
+              </td>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="number"
+                  class="form-control"
+                  value="0.00"
+                />
+              </td>
+              <td>
+                <input
+                  style="width: 100%; border: none"
+                  type="number"
+                  class="form-control"
+                  value="0.00"
+                />
+              </td>
+              <td>
+                <button class="btn btn-danger delete-row">Delete</button>
+              </td>
+            </tr>
+            <!-- Add more rows with input fields as needed -->
+          </tbody>
+        </table>
+
+        <div style="display: flex">
+          <h6 style="margin-left: 13%; font-size: 0.75rem">
+            Total (VAT not included)
+          </h6>
+          <h6 style="margin-left: 6%; font-size: 0.75rem"></h6>
+          <h6 style="margin-left: 26%; font-size: 0.75rem"></h6>
+          <h6 style="margin-left: 12%; font-size: 0.75rem"></h6>
+        </div>
+      </div>
+      <div
+        class="container"
+        style="
+          border: 1px solid black;
+          padding-top: 3%;
+          padding-bottom: 3%;
+          width: 100%;
+        "
+      >
+        <div class="row" style="text-align: left">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-2">
+                <label for="engineerName">Engineer Name:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="engineerName" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="serviceAdvisor">Service Advisor:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="serviceAdvisor" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="mobileNo">Mobile No:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="mobileNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="estimateCreatedBy">Estimate Created by:</label>
+              </div>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="estimateCreatedBy"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <!-- Second column content here -->
+            <div class="row">
+              <div class="col-md-2">
+                <label for="technician">Technician:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="technician" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="refJobNo">Ref.Job No:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="refJobNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="refEstNo">Ref.Est.#:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="refEstNo" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="mileage">Mileage(KM):</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="mileage" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">
+                <label for="remarks">Remarks:</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control" id="remarks" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'main/footer.html' %}
+    <!-- Your scripts -->
+    <script>
+      // Get today's date
+      var today = new Date();
+
+      // Get the day, month, and year
+      var day = String(today.getDate()).padStart(2, "0");
+      var month = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+      var year = today.getFullYear();
+
+      // Format today's date as "dd/mm/yyyy"
+      var formattedDate = day + "/" + month + "/" + year;
+
+      // Display today's date in the span with id="date"
+      document.getElementById("date").textContent = formattedDate;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the table element
+        var table = document.querySelector(".table");
+
+        // Attach event listener to the table
+        table.addEventListener("keydown", function (event) {
+          // Check if the pressed key is Enter and the target is an input element
+          if (
+            event.key === "Enter" &&
+            event.target.tagName.toLowerCase() === "input"
+          ) {
+            // Get the current row
+            var currentRow = event.target.closest("tr");
+
+            // Check if it is the second last column
+            if (
+              event.target ===
+              currentRow.children[currentRow.children.length - 2].querySelector(
+                "input"
+              )
+            ) {
+              // Clone the current row
+              var newRow = currentRow.cloneNode(true);
+
+              // Clear the input values in the new row
+              var inputs = newRow.querySelectorAll("input");
+              inputs.forEach(function (input) {
+                input.value = "";
+              });
+
+              // Append the new row to the table body
+              var tbody = table.querySelector("tbody");
+              tbody.appendChild(newRow);
+
+              // Focus on the first input field of the new row
+              var firstInput = newRow.querySelector("input");
+              firstInput.focus();
+
+              // Calculate the total by summing up the values in the last column of each row
+              updateTotal();
+            }
+          }
+        });
+
+        // Attach event listener to the delete buttons
+        table.addEventListener("click", function (event) {
+          if (event.target.classList.contains("delete-row")) {
+            // Get the current row
+            var currentRow = event.target.closest("tr");
+
+            // Remove the current row
+            currentRow.remove();
+
+            // Calculate the total by summing up the values in the last column of each row
+            updateTotal();
+          }
+        });
+
+        // Function to calculate the total
+        function updateTotal() {
+          var rows = table.querySelectorAll("tbody tr");
+          var amt_total = 0;
+          var serv_total = 0;
+          var parts_total = 0;
+
+          // Iterate through the rows and sum up the values in the last column
+          rows.forEach(function (row) {
+            var thirdCell = row.children[2]; // Get the 3rd column cell
+            var input = thirdCell.querySelector("input");
+            var value = parseFloat(input.value.trim());
+            if (!isNaN(value)) {
+              serv_total += value;
+            }
+
+            var partsCell = row.children[4];
+            var input = partsCell.querySelector("input");
+            var value = parseFloat(input.value.trim());
+            if (!isNaN(value)) {
+              parts_total += value;
+            }
+
+            var secondLastCell = row.children[5];
+            var input = secondLastCell.querySelector("input");
+            var value = parseFloat(input.value.trim());
+            if (!isNaN(value)) {
+              amt_total += value;
+            }
+          });
+
+          // Update the service in the HTML
+          var serviceElements = document.querySelectorAll(
+            ".container:last-of-type h6:nth-child(2)"
+          );
+          serviceElements.forEach(function (element) {
+            element.textContent = serv_total.toFixed(2);
+          });
+
+          // Update the parts in the HTML
+          var partsElements = document.querySelectorAll(
+            ".container:last-of-type h6:nth-child(3)"
+          );
+          partsElements.forEach(function (element) {
+            element.textContent = parts_total.toFixed(2);
+          });
+
+          // Update the total in the HTML
+          var totalElements = document.querySelectorAll(
+            ".container:last-of-type h6:nth-child(4)"
+          );
+          totalElements.forEach(function (element) {
+            element.textContent = amt_total.toFixed(2);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

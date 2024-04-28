@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Items</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Items</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Item Cost</th>
+            <th>Item Charge</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.item_id }}</td>
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.item_cost }}</td>
+            <td>{{ item.item_charge }}</td>
+            <td>
+              <a
+                href="{% url 'edit_item' item.item_id %}"
+                class="btn btn-secondary"
+                >Edit</a
+              >
+              <a
+                href="{% url 'delete_item' item.item_id %}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include 'main/footer.html' %}
+  </body>
+</html>

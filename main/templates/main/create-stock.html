@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Stock</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div
+      class="jumbotron container"
+      style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+    >
+      <h3 class="text-center">Stock</h3>
+
+      <div class="text-center">
+        <label for="transaction-type">Transaction Type:</label>
+        <select id="transaction-type" name="transaction-type">
+          <option value="buy">Buy</option>
+          <option value="sell">Sell</option>
+        </select>
+      </div>
+      <form
+        id="buy-form"
+        style="display: none"
+        action="{% url 'create_stock' %}"
+        method="POST"
+      >
+        <h3>Buy Item</h3>
+        {% csrf_token %}
+        <div class="form-group">
+          <div class="row">
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 1.3rem"
+            >
+              <label for="item-name">Item:</label>
+            </div>
+            <div class="col-form-label">
+              <select
+                id="service"
+                name="service"
+                class="form-control"
+                onclick="getItemInfo(this)"
+              >
+                {% for item in items %}
+                <option
+                  data-charge="{{ item.item_cost }}"
+                  value="{{ item.item_id }}"
+                >
+                  {{ item.item_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <input type="hidden" id="hidden-qty" name="hidden-qty" />
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 10rem"
+            >
+              <span id="buy-rate" for="buy-rate">Buy Rate:</span>
+              <input type="hidden" name="buy_inp" id="buy_inp" />
+            </div>
+
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 10rem"
+            >
+              <label id="curr-qty" for="curr-qty">Current Qty:</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div
+              class="col-form-label"
+              style="margin-right: 0.3rem; margin-left: 1.3rem"
+            >
+              <label for="qty">Quantity:</label>
+            </div>
+            <div class="col-form-label">
+              <input
+                required
+                type="number"
+                id="quantity"
+                name="quantity"
+                value="1"
+                oninput="calculateTotal(this)"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="margin-left: 2%" class="col-form-label">
+              <label for="grand-total" class="col-form-label"
+                ><strong>Grand Total</strong></label
+              >
+            </div>
+            <div style="margin-left: 2%" class="col-form-label">
+              <input
+                type="number"
+                id="grand-total"
+                name="grand-total"
+                readonly
+                class="form-control"
+                style="width: 100px"
+              />
+            </div>
+            <input
+              style="margin-left: 70%; margin-top: 1%; height: 2rem"
+              type="submit"
+              value="Submit"
+              class="btn btn-primary"
+            />
+          </div>
+        </div>
+      </form>
+
+      <form
+        id="sell-form"
+        style="display: none"
+        action="{% url 'sell_item' %}"
+        method="POST"
+      >
+        <h3>Sell Item</h3>
+        {% csrf_token %}
+        <div class="form-group">
+          <div class="row">
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 1.3rem"
+            >
+              <label for="item-name">Item:</label>
+            </div>
+            <div class="col-form-label">
+              <select
+                id="service"
+                name="service"
+                class="form-control"
+                onclick="getItemInfoSell(this)"
+              >
+                {% for item in items %}
+                <option
+                  data-charge="{{ item.item_charge }}"
+                  value="{{ item.item_id }}"
+                >
+                  {{ item.item_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <input type="hidden" id="hidden-qty-sale" name="hidden-qty-sale" />
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 10rem"
+            >
+              <span id="sell-rate" for="sell-rate">Sell Rate:</span>
+              <input type="hidden" name="sell_inp" id="sell_inp" />
+            </div>
+
+            <div
+              class="col-form-label"
+              style="margin-right: 3%; margin-left: 10rem"
+            >
+              <label id="curr-qty-sell" for="curr-qty">Current Qty:</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div
+              class="col-form-label"
+              style="margin-right: 0.3rem; margin-left: 1.3rem"
+            >
+              <label for="qty">Quantity:</label>
+            </div>
+            <div class="col-form-label">
+              <input
+                required
+                type="number"
+                id="quantity-sell"
+                name="quantity-sell"
+                value="1"
+                oninput="calculateTotalSell(this)"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="margin-left: 2%" class="col-form-label">
+              <label for="grand-total-sale" class="col-form-label"
+                ><strong>Grand Total</strong></label
+              >
+            </div>
+            <div style="margin-left: 2%" class="col-form-label">
+              <input
+                type="number"
+                id="grand-total-sale"
+                name="grand-total-sale"
+                readonly
+                class="form-control"
+                style="width: 100px"
+              />
+            </div>
+            <input
+              style="margin-left: 70%; margin-top: 1%; height: 2rem"
+              type="submit"
+              value="Submit"
+              class="btn btn-primary"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    {% include 'main/footer.html' %}
+    <script>
+      document
+        .getElementById("transaction-type")
+        .addEventListener("click", function () {
+          toggleBuyForm();
+        });
+
+      function toggleBuyForm() {
+        var transactionType = document.getElementById("transaction-type").value;
+        var buyForm = document.getElementById("buy-form");
+        var sellForm = document.getElementById("sell-form");
+
+        // Show the form only when "buy" is selected
+        if (transactionType === "buy") {
+          sellForm.style.display = "none";
+          buyForm.style.display = "block";
+        } else {
+          buyForm.style.display = "none";
+          sellForm.style.display = "block";
+        }
+      }
+      function getItemInfo(selectElement) {
+        var row = selectElement.parentNode.parentNode;
+        var serviceSelect = row.querySelector('select[name^="service"]');
+
+        if (serviceSelect) {
+          var selectedOption =
+            serviceSelect.options[serviceSelect.selectedIndex];
+
+          // Get the item ID from the value of the selected option
+          var itemId = selectedOption.value;
+
+          // Make an AJAX request to the server to get the item quantity
+          fetch("/get-item-qty/?item_id=" + itemId)
+            .then((response) => response.json()) // Parse the response as JSON
+            .then((data) => {
+              // Get the hidden input field by its ID (e.g., 'hidden-qty')
+              var hiddenQtyInput = document.getElementById("hidden-qty");
+
+              // Check if the data contains the quantity
+              if (data && data.qty !== undefined) {
+                // Store the item quantity in the hidden input field
+                hiddenQtyInput.value = data.qty;
+              } else {
+                console.error("Failed to retrieve item quantity.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching item quantity:", error);
+            });
+
+          var currQty = !isNaN(
+            parseInt(document.getElementById("hidden-qty").value)
+          )
+            ? parseInt(document.getElementById("hidden-qty").value)
+            : 0;
+
+          var serviceCharge = parseFloat(
+            selectedOption.getAttribute("data-charge")
+          );
+
+          var quantity = parseInt(document.getElementById("quantity").value);
+          var total = serviceCharge * quantity;
+
+          if (!isNaN(total)) {
+            // Select the label element by its ID
+            var currQtyLabel = document.getElementById("curr-qty");
+            var buyRateLabel = document.getElementById("buy-rate");
+            var buyRateInp = document.getElementById("buy_inp");
+
+            // Set the text content of the label
+            currQtyLabel.textContent = "Current Qty: " + currQty;
+            buyRateLabel.textContent = "Buy Rate: " + serviceCharge.toFixed(2);
+            buyRateInp.value = serviceCharge.toFixed(2);
+
+            var grandTotal = document.getElementById("grand-total");
+            grandTotal.value = total.toFixed(2);
+          }
+        } else {
+          console.error("Service select element not found.");
+        }
+      }
+      function calculateTotal(selectElement) {
+        var currQty = !isNaN(
+          parseInt(document.getElementById("hidden-qty").value)
+        )
+          ? parseInt(document.getElementById("hidden-qty").value)
+          : 0;
+
+        var serviceCharge = parseFloat(
+          document.getElementById("buy_inp").value
+        );
+        var quantity = parseInt(document.getElementById("quantity").value);
+
+        var newQty = currQty + quantity;
+
+        var total = serviceCharge * quantity;
+
+        if (!isNaN(total)) {
+          var currQtyLabel = document.getElementById("curr-qty");
+          currQtyLabel.textContent = "Current Qty: " + newQty;
+          var grandTotal = document.getElementById("grand-total");
+          grandTotal.value = total.toFixed(2);
+        }
+      }
+      function getItemInfoSell(selectElement) {
+        var row = selectElement.parentNode.parentNode;
+        var serviceSelect = row.querySelector('select[name^="service"]');
+
+        if (serviceSelect) {
+          var selectedOption =
+            serviceSelect.options[serviceSelect.selectedIndex];
+
+          // Get the item ID from the value of the selected option
+          var itemId = selectedOption.value;
+
+          // Make an AJAX request to the server to get the item quantity
+          fetch("/get-item-qty/?item_id=" + itemId)
+            .then((response) => response.json()) // Parse the response as JSON
+            .then((data) => {
+              // Get the hidden input field by its ID (e.g., 'hidden-qty')
+              var hiddenQtyInput = document.getElementById("hidden-qty-sale");
+
+              // Check if the data contains the quantity
+              if (data && data.qty !== undefined) {
+                // Store the item quantity in the hidden input field
+                hiddenQtyInput.value = data.qty;
+              } else {
+                console.error("Failed to retrieve item quantity.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching item quantity:", error);
+            });
+
+          var currQty = !isNaN(
+            parseInt(document.getElementById("hidden-qty-sale").value)
+          )
+            ? parseInt(document.getElementById("hidden-qty-sale").value)
+            : 0;
+
+          console.log("Current QTTTT" + currQty);
+          var serviceCharge = parseFloat(
+            selectedOption.getAttribute("data-charge")
+          );
+
+          var quantity = parseInt(
+            document.getElementById("quantity-sell").value
+          );
+          var total = serviceCharge * quantity;
+
+          if (!isNaN(total)) {
+            // Select the label element by its ID
+            var currQtyLabel = document.getElementById("curr-qty-sell");
+            var sellRateLabel = document.getElementById("sell-rate");
+            var sellRateInp = document.getElementById("sell_inp");
+
+            // Set the text content of the label
+            currQtyLabel.textContent = "Current Qty: " + currQty;
+            sellRateLabel.textContent =
+              "Sell Rate: " + serviceCharge.toFixed(2);
+            sellRateInp.value = serviceCharge.toFixed(2);
+
+            var grandTotal = document.getElementById("grand-total-sale");
+            grandTotal.value = total.toFixed(2);
+          }
+        } else {
+          console.error("Service select element not found.");
+        }
+      }
+      function calculateTotalSell(selectElement) {
+        var currQty = !isNaN(
+          parseInt(document.getElementById("hidden-qty-sale").value)
+        )
+          ? parseInt(document.getElementById("hidden-qty-sale").value)
+          : 0;
+
+        var serviceCharge = parseFloat(
+          document.getElementById("sell_inp").value
+        );
+        var quantity = parseInt(document.getElementById("quantity-sell").value);
+
+        if (!isNaN(quantity)) {
+          var newQty = currQty - quantity;
+
+          console.log(newQty);
+
+          var total = serviceCharge * quantity;
+
+          if (!isNaN(total)) {
+            var currQtyLabel = document.getElementById("curr-qty-sell");
+            currQtyLabel.textContent = "Current Qty: " + newQty;
+            var grandTotal = document.getElementById("grand-total-sale");
+            grandTotal.value = total.toFixed(2);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

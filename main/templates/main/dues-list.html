@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dues</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Due Sales</h3>
+
+      <!-- New table for Due data -->
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Memo ID</th>
+            <th>Due ID</th>
+            <th>Customer</th>
+            <th>Due Total</th>
+            <th>Due Received</th>
+            <th>Receive</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% regroup dues by memo_id as memo_dues %} {% for memo in memo_dues %}
+          {% for due in memo.list %}
+
+          <tr>
+            {% if forloop.first %}
+            <td rowspan="{{ memo.list|length }}">{{ memo.grouper.memo_id }}</td>
+            {% endif %}
+            <td>{{ due.due_id }}</td>
+            <td>{{ memo.grouper.customer_name }}</td>
+            <td>{{ due.due_total }}</td>
+            <td>{{ due.due_received }}</td>
+            <td>
+              <form action="{% url 'update_due' due.due_id %}" method="POST">
+                {% csrf_token %}
+                <input
+                  type="number"
+                  name="receive-{{ due.due_id }}"
+                  id="receive-{{ due.due_id }}"
+                  min="0"
+                  step="0.01"
+                />
+                {% if due.due_received >= due.due_total %}
+                <button
+                  type="submit"
+                  onclick="receiveDue('{{ due.due_id }}')"
+                  disabled
+                >
+                  Receive
+                </button>
+                {% else %}
+                <button type="submit" onclick="receiveDue('{{ due.due_id }}')">
+                  Receive
+                </button>
+                {% endif %}
+              </form>
+            </td>
+          </tr>
+          {% endfor %} {% empty %}
+          <tr>
+            <td colspan="6">No due data available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include 'main/footer.html' %}
+
+    <script>
+      function receiveDue(dueId) {
+        const inputField = document.getElementById(`pay-${dueId}`);
+        const amount = parseFloat(inputField.value);
+        if (isNaN(amount) || amount <= 0) {
+          alert("Please enter a valid payment amount.");
+          return;
+        }
+      }
+    </script>
+  </body>
+</html>

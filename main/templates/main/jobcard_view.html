@@ -1,0 +1,620 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <style>
+      .main {
+        background-image: url("{% static 'sign.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 15vh; /* Adjust the height of the container as needed */
+        width: 100%; /* Adjust the width of the container as needed */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      /* Adjust layout for printing */
+      @media print {
+        .row .col-md-2 {
+          display: inline-block;
+          width: 30%;
+        }
+        .row .col-md-4 {
+          display: inline-block;
+          width: 70%;
+        }
+        .alias-ninja {
+          margin-bottom: 5rem;
+        }
+        .col-md-4 {
+          flex: 0 0 33.33%;
+          max-width: 33.33%;
+        }
+        .col-md-6 {
+          width: 50%;
+          flex-basis: 50%;
+        }
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .main {
+          background-image: url("{% static 'sign.jpg' %}");
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          height: 5vh;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        input[type="text"] {
+          border: none;
+        }
+        .delete-row {
+          display: none !important;
+        }
+        .navbar {
+          display: none;
+        }
+        footer {
+          display: none !important;
+        }
+        .submit-bt {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% include 'main/navbar.html' %}
+    <div
+      class="jumbotron container justify-content-center"
+      style="background-color: white; text-align: left"
+    >
+      <form id="dynamic-form" action="{% url 'create_jobcard' %}" method="POST">
+        {% csrf_token %}
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div
+            style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+            class="main"
+          ></div>
+          <div class="text-center mb-3">
+            <h5><u>Jobcard</u></h5>
+          </div>
+          <div class="text-center mb-3">
+            <h3><strong>Kings Auto Complex</strong></h3>
+          </div>
+          <div class="text-center mb-3" style="font-size: 0.75rem">
+            (Beside Kolka CNG Pump, Shagorika, P.C Road, Chattogram.)
+          </div>
+
+          <div class="row" style="text-align: left">
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="Ref">Order No:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="order"
+                    name="order"
+                    value="{{ jobcard_records.order_id }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="date">Date:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    class="form-control"
+                    id="date"
+                    value="{{ jobcard_records.order_date }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="name">Customer Name:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    value="{{ jobcard_records.customer_name }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="address">Address:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="address"
+                    name="address"
+                    value="{{ jobcard_records.customer_address }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="phone">Phone:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    value="{{ jobcard_records.customer_phone }}"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <!-- Second column content here -->
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="chassisNo">Chassis No:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="chassisNo"
+                    name="chassisNo"
+                    value="{{ jobcard_records.chassis }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="vehicleName">Vehicle Name:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="vehicleName"
+                    name="vehicleName"
+                    value="{{ jobcard_records.vehicle }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="modelYear">Model Year:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="modelYear"
+                    name="modelYear"
+                    value="{{ jobcard_records.model_year }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="model">Model:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="model"
+                    name="model"
+                    value="{{ jobcard_records.model }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="engineNo">Engine No:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="engineNo"
+                    name="engineNo"
+                    value="{{ jobcard_records.engine }}"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-2">
+                  <label for="vehicleReg">Vehicle Reg:</label>
+                </div>
+                <div class="col-md-4">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="vehicleReg"
+                    name="vehicleReg"
+                    value="{{ jobcard_records.reg }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <!-- Table -->
+          <table class="table mt-4 table-hover" style="width: 90%">
+            <thead>
+              <tr>
+                <th scope="col">SL NO.</th>
+                <th scope="col">Customer request as per own words</th>
+                <th scope="col">Category</th>
+                <th scope="col">Labor Charge</th>
+                <!-- Empty column for delete button -->
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Add table rows here -->
+              {% for record in customer_records %}
+              <tr>
+                <td>
+                  <input
+                    style="width: 100%; border: none"
+                    type="text"
+                    class="form-control"
+                    id="slno_{{ forloop.counter }}"
+                    name="slno_{{ forloop.counter }}"
+                    value="{{ record.sl_no }}"
+                  />
+                </td>
+                <td>
+                  <input
+                    style="width: 100%; border: none"
+                    type="text"
+                    class="form-control"
+                    id="customerRequest_{{ forloop.counter }}"
+                    name="customerRequest_{{ forloop.counter }}"
+                    value="{{ record.request }}"
+                  />
+                </td>
+                <td>
+                  <input
+                    style="width: 100%; border: none"
+                    type="text"
+                    class="form-control"
+                    id="category_{{ forloop.counter }}"
+                    name="category_{{ forloop.counter }}"
+                    value="{{ record.category }}"
+                  />
+                </td>
+                <td>
+                  <input
+                    style="width: 100%; border: none"
+                    type="text"
+                    class="form-control laborCharge"
+                    id="laborCharge_{{ forloop.counter }}"
+                    name="laborCharge_{{ forloop.counter }}"
+                    value="{{ record.charge }}"
+                  />
+                </td>
+              </tr>
+              {% endfor %}
+              <!-- Add more rows as needed -->
+            </tbody>
+          </table>
+          <!-- Total -->
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="d-flex">
+                <label style="margin-left: 100%">Total:</label>
+                <input
+                  style="margin-left: 30%; width: 100px; border: none"
+                  type="number"
+                  class="form-control"
+                  id="totalAmount"
+                  name="totalAmount"
+                  value="Amount"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <!-- Additional Table -->
+          <div class="row mt-5">
+            <div class="col-md-12">
+              <table class="table table-hover" style="width: 90%">
+                <thead>
+                  <tr>
+                    <th scope="col">SL NO.</th>
+                    <th scope="col">After Diagnosis and Inspection</th>
+                  </tr>
+                </thead>
+                <tbody id="diagnosisTableBody">
+                  {% for record in diagnosis_records %}
+                  <tr>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        value="{{ record.sl_no }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        value="{{ record.diagnosis_detail }}"
+                      />
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  <!-- Add more rows as needed -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Diagnosis By and Driver's/Owner's Signature -->
+          <div class="row alias-ninja">
+            <div class="col-md-4 mt-5">
+              <!-- Horizontal line above Reference By -->
+              <hr
+                style="
+                  border: 0;
+                  border-top: 2px solid #000;
+                  margin-top: 5px;
+                  margin-bottom: 5px;
+                  width: 50%;
+                "
+              />
+              <div class="form-group" style="margin-left: 38%">
+                <label for="referenceBy">Reference By</label>
+              </div>
+            </div>
+            <div class="col-md-4 mt-5">
+              <!-- Horizontal line above Diagnosis By -->
+              <hr
+                style="
+                  border: 0;
+                  border-top: 2px solid #000;
+                  margin-top: 5px;
+                  margin-bottom: 5px;
+                  width: 50%;
+                "
+              />
+              <div class="form-group" style="margin-left: 38%">
+                <label for="diagnosisBy">Diagnosis By</label>
+              </div>
+            </div>
+            <div class="col-md-4 mt-5">
+              <!-- Horizontal line above Driver's/Owner's Signature -->
+              <hr
+                style="
+                  border: 0;
+                  border-top: 2px solid #000;
+                  margin-top: 5px;
+                  margin-bottom: 5px;
+                  width: 50%;
+                "
+              />
+              <div class="form-group">
+                <label for="signature" style="margin-left: 20%"
+                  >Driver's/Owner's Signature</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <!-- Additional Table -->
+          <div class="row mt-5 page-break-before">
+            <div class="col-md-12">
+              <table class="table table-hover" style="width: 90%">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-center" colspan="4">
+                      Issue From Store
+                    </th>
+                    <th scope="col" class="text-center" colspan="4">
+                      Demand From WorkShop
+                    </th>
+                  </tr>
+                  <tr>
+                    <th scope="col">SL NO.</th>
+                    <th scope="col">Description of Materials</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Description of Requisition Materials</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Signature</th>
+                  </tr>
+                </thead>
+                <tbody id="materialTableBody">
+                  {% for record in issue_demand_records %}
+                  <tr>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="mslno_1"
+                        name="mslno_1"
+                        value="{{ record.sl_no }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="mat_des_1"
+                        name="mat_des_1"
+                        value="{{ record.material_description }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="mat_qty_1"
+                        name="mat_qty_1"
+                        value="{{ record.material_qty }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="mat_price_1"
+                        name="mat_price_1"
+                        value="{{ record.material_price }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="req_des_1"
+                        name="req_des_1"
+                        value="{{ record.req_description }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="req_qty_1"
+                        name="req_qty_1"
+                        value="{{ record.req_qty }}"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        style="width: 100%; border: none"
+                        type="text"
+                        class="form-control"
+                        id="mat_sign_1"
+                        name="mat_sign_1"
+                        value="{{ record.req_sign }}"
+                      />
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  <!-- Add more rows as needed -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="Ref">Engineer Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="engineerName"
+                  name="engineerName"
+                  value="{{ issue_demand_engineer_records.engineer }}"
+                />
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="name">Technician Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="technicianname"
+                  name="technicianname"
+                  value="{{ issue_demand_engineer_records.technician }}"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+      </form>
+    </div>
+
+    {% include 'main/footer.html' %}
+    <!-- Your scripts -->
+    <script>
+      // Get all the labor charge input elements
+      const laborChargeInputs = document.querySelectorAll(".laborCharge");
+
+      // Function to calculate and update the total amount
+      function updateTotalAmount() {
+        let totalAmount = 0;
+
+        // Iterate over each labor charge input and sum the values
+        laborChargeInputs.forEach((input) => {
+          const laborCharge = parseFloat(input.value);
+          if (!isNaN(laborCharge)) {
+            totalAmount += laborCharge;
+          }
+        });
+
+        // Update the total amount input field
+        const totalAmountInput = document.getElementById("totalAmount");
+        totalAmountInput.value = totalAmount.toFixed(2);
+      }
+
+      // Add event listeners to labor charge inputs for real-time updates
+      laborChargeInputs.forEach((input) => {
+        input.addEventListener("input", updateTotalAmount);
+      });
+
+      // Initial calculation on page load
+      updateTotalAmount();
+    </script>
+  </body>
+</html>

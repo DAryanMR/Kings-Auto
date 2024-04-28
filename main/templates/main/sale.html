@@ -1,0 +1,704 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sale Page</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- jQuery library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+      #dynamic-rows .form-row:not(:last-child) {
+        margin-bottom: 0.5rem; /* Adjust the value as needed */
+      }
+    </style>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div
+      class="jumbotron container"
+      style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+    >
+      <form id="dynamic-form" action="{% url 'create_sale' %}" method="POST">
+        {% csrf_token %}
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div class="form-group row">
+            <div class="col-sm-2">
+              <h2>Sale</h2>
+            </div>
+            <label for="sale_date" class="col-sm-2 col-form-label"
+              >Sale Date:</label
+            >
+            <div class="col-sm-2">
+              <input
+                type="date"
+                id="sale_date"
+                name="sale_date"
+                class="form-control"
+              />
+            </div>
+
+            <label for="memo_id" class="col-sm-2 col-form-label"
+              >Memo ID:</label
+            >
+            <div class="col-sm-2">
+              {% if current_memo_id %}
+              <input
+                type="text"
+                id="memo_id"
+                name="memo_id"
+                class="form-control"
+                value="{{ current_memo_id }}"
+              />
+              {% else %}
+              <input
+                type="text"
+                id="memo_id"
+                name="memo_id"
+                class="form-control"
+                value="1"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div style="font-size: 0.75rem" id="dynamic-rows">
+            <div class="form-row" style="text-align: left">
+              <div class="col">
+                <label for="sl1">SL No.</label>
+              </div>
+              <div class="col">
+                <label for="stuff1">Stuff</label>
+              </div>
+              <div class="col">
+                <label for="customer-name1">Mobile</label>
+              </div>
+              <div class="col">
+                <label for="car-name1">Car</label>
+              </div>
+              <div class="col">
+                <label for="car-registration1">Reg</label>
+              </div>
+              <div class="col">
+                <label for="service1">Service</label>
+              </div>
+              <div class="col">
+                <label for="total1">Total</label>
+              </div>
+              <div class="col">
+                <label for="discount-percentage1">Discount (%)</label>
+              </div>
+              <div class="col">
+                <label for="paid-total1">Cash</label>
+              </div>
+              <div class="col">
+                <label for="due-amount1">Due</label>
+              </div>
+              <div class="col">
+                <label for="payment-status1">Status</label>
+              </div>
+              <div class="col">
+                <label for="payment-method1">Method</label>
+              </div>
+
+              <div class="col">
+                <label>&nbsp;</label>
+              </div>
+            </div>
+            {% for i in "1" %}
+            <div class="form-row">
+              <div class="col">
+                <input
+                  type="text"
+                  id="sl{{ forloop.counter }}"
+                  name="sl{{ forloop.counter }}"
+                  class="form-control"
+                  value="{{ forloop.counter }}"
+                />
+              </div>
+              <div class="col">
+                <select
+                  id="stuff{{ forloop.counter }}"
+                  name="stuff{{ forloop.counter }}"
+                  class="form-control"
+                >
+                  {% for stuff in stuffs %}
+                  <option value="{{ stuff.stuff_id }}">
+                    {{ stuff.stuff_name }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col" style="width: 10px">
+                <input
+                  type="text"
+                  id="customer-name{{ forloop.counter }}"
+                  name="customer-name{{ forloop.counter }}"
+                  class="form-control"
+                  ="Mobile"
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  id="car-name{{ forloop.counter }}"
+                  name="car-name{{ forloop.counter }}"
+                  class="form-control"
+                  ="Car"
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  id="car-registration{{ forloop.counter }}"
+                  name="car-registration{{ forloop.counter }}"
+                  class="form-control"
+                />
+              </div>
+              <div class="col">
+                <select
+                  name="service{{ forloop.counter }}"
+                  class="form-control"
+                  onclick="calculateTotal(this)"
+                >
+                  {% for service in services %}
+                  <option
+                    value="{{ service.service_id }}"
+                    data-charge="{{ service.service_charge }}"
+                  >
+                    {{ service.service_name }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col">
+                <input
+                  value="0"
+                  type="text"
+                  id="total{{ forloop.counter }}"
+                  name="total{{ forloop.counter }}"
+                  class="form-control"
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="number"
+                  id="discount-percentage{{ forloop.counter }}"
+                  name="discount-percentage{{ forloop.counter }}"
+                  min="0"
+                  max="100"
+                  oninput="updateDynGrandTotal(this, '{{ forloop.counter }}')"
+                  class="form-control"
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="number"
+                  id="paid-total{{ forloop.counter }}"
+                  name="paid-total{{ forloop.counter }}"
+                  min="0"
+                  class="form-control"
+                  oninput="updateDueAmount(this, '{{ forloop.counter }}')"
+                />
+              </div>
+              <div class="col">
+                <input
+                  value="0"
+                  type="number"
+                  id="due-amount{{ forloop.counter }}"
+                  name="due-amount{{ forloop.counter }}"
+                  min="0"
+                  class="form-control"
+                />
+              </div>
+              <div class="col">
+                <select
+                  id="payment-status{{ forloop.counter }}"
+                  name="payment-status{{ forloop.counter }}"
+                  class="form-control"
+                  onclick="handlePaymentStatusChange(this)"
+                >
+                  <option value="unpaid" selected>Unpaid</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+              <div class="col">
+                <select
+                  id="payment-method{{ forloop.counter }}"
+                  name="payment-method{{ forloop.counter }}"
+                  class="form-control"
+                >
+                  <option value="cash" selected>Cash</option>
+                  <option value="bkash">Bkash</option>
+                  <option value="nagad">Nagad</option>
+                  <option value="card">Card</option>
+                </select>
+              </div>
+              <div class="col">
+                <span class="btn btn-danger" onclick="removeRow(this)"
+                  >Remove</span
+                >
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div
+          class="container"
+          style="border: 1px solid black; padding-top: 3%; padding-bottom: 3%"
+        >
+          <div class="form-row">
+            <div class="col">
+              <button
+                style="margin-top: 7px; margin-bottom: 7px"
+                type="button"
+                id="add-btn"
+                name="add-btn"
+                class="add-row-btn btn btn-primary"
+                onclick="addRow()"
+              >
+                Add Row
+              </button>
+            </div>
+            <div
+              class="row"
+              style="margin-top: 7px; margin-bottom: 7px; margin-left: 58%"
+            >
+              <div class="col">
+                <label for="grand-total" class="col-form-label"
+                  ><strong>Grand Total</strong></label
+                >
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  id="grand-total"
+                  class="form-control"
+                  style="width: 100px"
+                />
+              </div>
+            </div>
+
+            <div class="col">
+              <button
+                style="margin-top: 7px; margin-bottom: 7px"
+                id="confirm-button"
+                name="confirm-button"
+                type="submit"
+                class="btn btn-success"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row"></div>
+      </form>
+    </div>
+    {% include 'main/footer.html' %}
+    <script>
+      // Get the current date in the format "YYYY-MM-DD"
+      var currentDate = new Date().toISOString().slice(0, 10);
+
+      // Set the default value of the input field to the current date
+      document.getElementById("sale_date").value = currentDate;
+
+      // Flag to indicate if the form has unsaved changes
+      let isFormDirty = false;
+
+      // Function to set the form as dirty if any input has a value
+      function setFormDirty() {
+        isFormDirty = true;
+      }
+
+      // Add event listeners to existing inputs and selects
+      function addListenersToInputs(inputs) {
+        inputs.forEach((input) => {
+          input.addEventListener("input", setFormDirty);
+          input.addEventListener("change", setFormDirty);
+        });
+      }
+
+      // Initialize listeners for existing form inputs
+      const formInputs = document.querySelectorAll(
+        "#dynamic-form input, #dynamic-form select"
+      );
+      addListenersToInputs(formInputs);
+
+      // Add event listener for the beforeunload event to display a confirmation dialog if form is dirty
+      window.addEventListener("beforeunload", (e) => {
+        if (isFormDirty) {
+          const confirmationMessage =
+            "You have unsaved changes. Are you sure you want to leave?";
+          e.returnValue = confirmationMessage; // For cross-browser compatibility
+          return confirmationMessage;
+        }
+      });
+
+      // Reset the flag when the form is successfully submitted
+      document.getElementById("dynamic-form").addEventListener("submit", () => {
+        isFormDirty = false;
+      });
+
+      // Function to handle payment status change
+      function handlePaymentStatusChange(selectElement) {
+        var rowNumber = selectElement.id.split("payment-status")[1];
+        var totalElement = document.getElementById("total" + rowNumber);
+        var paidTotalElement = document.getElementById(
+          "paid-total" + rowNumber
+        );
+        var dueAmountElement = document.getElementById(
+          "due-amount" + rowNumber
+        );
+
+        if (selectElement.value === "paid") {
+          paidTotalElement.value = totalElement.value;
+          dueAmountElement.value = 0;
+        } else {
+          paidTotalElement.value = 0;
+          dueAmountElement.value = totalElement.value;
+        }
+        calculateGrandTotal();
+      }
+      function calculateTotal(selectElement) {
+        var row = selectElement.parentNode.parentNode;
+        var serviceSelect = row.querySelector('select[name^="service"]');
+        var selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+        var serviceCharge = parseFloat(
+          selectedOption.getAttribute("data-charge")
+        );
+
+        row.querySelector('input[name^="total"]').value =
+          serviceCharge.toFixed(2);
+
+        calculateGrandTotal();
+      }
+
+      function calculateGrandTotal() {
+        var totalInputs = document.querySelectorAll(
+          'input[name^="paid-total"]'
+        );
+        var grandTotal = 0;
+
+        totalInputs.forEach(function (input) {
+          var totalValue = parseFloat(input.value);
+          if (!isNaN(totalValue)) {
+            grandTotal += totalValue;
+          }
+        });
+
+        var grandTotalInput = document.getElementById("grand-total");
+        if (!grandTotalInput) {
+          // Create the grand total input field if it doesn't exist
+          grandTotalInput = document.createElement("input");
+          grandTotalInput.type = "text";
+          grandTotalInput.id = "grand-total";
+          grandTotalInput.readOnly = true;
+
+          // Find the "Add Row" button
+          var addButton = document.getElementById("add-btn");
+
+          // Get the parent container of the "Add Row" button
+          var parentContainer = addButton.parentNode;
+
+          // Create a new div element for the grand total input field and its label
+          var grandTotalDiv = document.createElement("div");
+          grandTotalDiv.classList.add("col");
+
+          // Create a label for the grand total input field
+          var grandTotalLabel = document.createElement("label");
+          grandTotalLabel.textContent = "Total: ";
+
+          // Append the label and input field to the div
+          grandTotalDiv.appendChild(grandTotalLabel);
+          grandTotalDiv.appendChild(grandTotalInput);
+
+          // Insert the div after the "Add Row" button
+          parentContainer.insertBefore(grandTotalDiv, addButton.nextSibling);
+        }
+
+        grandTotalInput.value = grandTotal.toFixed(2);
+      }
+
+      function updateDynGrandTotal(selectElement, dyn_id) {
+        var dynTotalInp = "total" + String(dyn_id);
+
+        var dynTotal = parseFloat(document.getElementById(dynTotalInp).value);
+
+        var dynDiscountInp = "discount-percentage" + String(dyn_id);
+        var discountPercentage = parseInt(
+          document.getElementById(dynDiscountInp).value
+        );
+        var discountAmount = dynTotal * (discountPercentage / 100);
+        var grandDynTotal = dynTotal - discountAmount;
+
+        document.getElementById(dynTotalInp).value = grandDynTotal.toFixed(2);
+
+        calculateGrandTotal();
+      }
+
+      // Function to add a new row dynamically
+      function addRow() {
+        // Get the container element for dynamic rows
+        var dynamicRowsContainer = document.getElementById("dynamic-rows");
+
+        // Create a new div element for the row
+        var newRow = document.createElement("div");
+        newRow.className = "form-row";
+
+        // Generate a unique ID for the row
+        var uniqueId = Date.now();
+
+        // Get all the rows in the container
+        var rows = dynamicRowsContainer.querySelectorAll(".form-row");
+
+        // Check if there are any existing rows
+        var lastRow = rows[rows.length - 1];
+        var lastSlValue = 0;
+
+        if (lastRow) {
+          // Get the SL number input in the last row
+          var lastSlInput = lastRow.querySelector("input[name^='sl']");
+
+          // Get the value of the SL number input in the last row
+          lastSlValue = parseInt(lastSlInput.value);
+        }
+
+        // Construct the row HTML using Bootstrap 4 classes
+        newRow.innerHTML = `
+    <div class="col">
+      <input
+        
+        type="text"
+        id="sl${lastSlValue + 1}"
+        name="sl${lastSlValue + 1}"
+        class="form-control"
+        value="${lastSlValue + 1}"
+      />
+    </div>
+    <div class="col">
+      <select
+        id="stuff${uniqueId}"
+        name="stuff${uniqueId}"
+        class="form-control"
+      >
+        {% for stuff in stuffs %}
+        <option value="{{ stuff.stuff_id }}">
+          {{ stuff.stuff_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <input
+        
+        type="text"
+        id="customer-name${uniqueId}"
+        name="customer-name${uniqueId}"
+        ="Mobile"
+        class="form-control"
+      />
+    </div>
+    <div class="col">
+      <input
+        
+        type="text"
+        id="car-name${uniqueId}"
+        name="car-name${uniqueId}"
+        ="Car Name"
+        class="form-control"
+      />
+    </div>
+    <div class="col">
+      <input
+          
+        type="text"
+        id="car-registration${uniqueId}"
+        name="car-registration${uniqueId}"
+        ="Car Registration"
+        class="form-control"
+      />
+    </div>
+    <div class="col">
+      <select
+        id="service${uniqueId}"
+        name="service${uniqueId}"
+        class="form-control"
+        onclick="calculateTotal(this)"
+      >
+        {% for service in services %}
+        <option
+          value="{{ service.service_id }}"
+          data-charge="{{ service.service_charge }}"
+        >
+          {{ service.service_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="col">
+      <input
+        value="0"
+        type="number"
+        id="total${uniqueId}"
+        name="total${uniqueId}"
+        ="Total:"
+        class="form-control"
+      />
+    </div>
+    <div class="col">
+      <input
+        type="number"
+        min="0"
+        max="100"
+        id="discount-percentage${uniqueId}"
+        name="discount-percentage${uniqueId}"
+        ="Discount"
+        oninput="updateDynGrandTotal(this, ${uniqueId})"
+        class="form-control"
+      />
+    </div>
+
+
+    <div class="col">
+      <input
+        type="number"
+        id="paid-total${uniqueId}"
+        name="paid-total${uniqueId}"
+        min="0"
+        class="form-control"
+        oninput="updateDueAmount(this, ${uniqueId})"
+      />
+    </div>
+
+    <div class="col">
+      <input
+        value="0"
+        type="number"
+        id="due-amount${uniqueId}"
+        name="due-amount${uniqueId}"
+        min="0"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col">
+      <select
+        id="payment-status${uniqueId}"
+        name="payment-status${uniqueId}"
+        class="form-control"
+        onclick="handlePaymentStatusChange(this)"
+      >
+        <option value="unpaid">Unpaid</option>
+        <option value="paid">Paid</option>
+      </select>
+    </div>
+
+    <div class="col">
+                <select
+                  id="payment-method${uniqueId}"
+                  name="payment-method${uniqueId}"
+                  class="form-control"
+                >
+                  <option value="cash" selected>Cash</option>
+                  <option value="bkash">Bkash</option>
+                  <option value="nagad">Nagad</option>
+                  <option value="card">Card</option>
+                </select>
+              </div>
+
+    
+    <div class="col">
+      <span class="btn btn-danger" onclick="removeRow(this)">Remove</span>
+    </div>
+  `;
+
+        // Append the new row to the dynamic rows container
+        dynamicRowsContainer.appendChild(newRow);
+
+        // Create an empty div element for line break
+        var lineBreak = document.createElement("div");
+        lineBreak.className = "mb-8";
+
+        // Append the line break after the new row
+        dynamicRowsContainer.appendChild(lineBreak);
+
+        // Add listeners to the new inputs in the row
+        const newInputs = newRow.querySelectorAll("input, select");
+        addListenersToInputs(newInputs);
+      }
+
+      function removeRow(removeButton) {
+        var row = removeButton.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        calculateGrandTotal();
+      }
+
+      // Function to calculate and update the due amount
+      function updateDueAmount(element, rowNumber) {
+        // Get the paid-total input element
+        var paidTotalInput = document.getElementById("paid-total" + rowNumber);
+
+        // Get the total input element
+        var totalInput = document.getElementById("total" + rowNumber);
+
+        // Get the due-amount input element
+        var dueAmountInput = document.getElementById("due-amount" + rowNumber);
+
+        // Get the paid total value
+        var paidTotal = parseFloat(paidTotalInput.value);
+
+        // Get the total value
+        var total = parseFloat(totalInput.value);
+
+        // Calculate the due amount
+        var dueAmount = total - paidTotal;
+
+        // Update the due-amount input field with the calculated value
+        dueAmountInput.value = dueAmount.toFixed(2);
+
+        calculateGrandTotal();
+      }
+
+      // Add onchange event listeners to paid-total input fields
+      var paidTotalInputs = document.querySelectorAll(
+        "input[id^='paid-total']"
+      );
+      for (var i = 0; i < paidTotalInputs.length; i++) {
+        var paidTotalInput = paidTotalInputs[i];
+        var rowNumber = paidTotalInput.id.replace("paid-total", "");
+        paidTotalInput.onchange = function () {
+          updateDueAmount(this, rowNumber);
+        };
+      }
+    </script>
+  </body>
+</html>

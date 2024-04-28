@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Stuff</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      .form-group {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .form-group label {
+        flex: 0 0 150px;
+        text-align: right;
+        padding-right: 10px;
+      }
+
+      .form-group input {
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Edit Stuff</h3>
+      <form action="{% url 'update_stuff' stuff.stuff_id %}" method="POST">
+        {% csrf_token %}
+        <div class="container">
+          <div class="row">
+            <div class="form-group">
+              <label for="join_date">Join Date:</label>
+              <input
+                value="{{ stuff.join_date }}"
+                style="width: 6rem"
+                type="date"
+                id="join_date"
+                name="join_date"
+                class="form-control"
+              />
+              <br />
+              <label for="stuff_name">Stuff Name:</label>
+              <input
+                value="{{ stuff.stuff_name }}"
+                required
+                style="width: 15rem"
+                class="form-control"
+                type="text"
+                id="stuff_name"
+                name="stuff_name"
+              />
+              <br />
+              <label for="stuff_name">Father's Name:</label>
+              <input
+                value="{{ stuff.stuff_father }}"
+                style="width: 15rem"
+                class="form-control"
+                type="text"
+                id="stuff_father"
+                name="stuff_father"
+              />
+              <br />
+            </div>
+            <br />
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label for="stuff_salary">Stuff NID:</label>
+              <input
+                value="{{ stuff.stuff_nid }}"
+                style="width: 15rem"
+                class="form-control"
+                type="number"
+                id="stuff_nid"
+                name="stuff_nid"
+              />
+              <br />
+              <label for="stuff_salary">Stuff Salary:</label>
+              <input
+                value="{{ stuff.stuff_salary }}"
+                required
+                style="width: 7rem"
+                class="form-control"
+                type="number"
+                id="stuff_salary"
+                name="stuff_salary"
+              />
+              <br />
+              <label for="duty_days">Duty Days:</label>
+
+              <input
+                value="{{ stuff.duty_days }}"
+                style="width: 4rem"
+                value="30"
+                class="form-control"
+                placeholder="Duty Days:"
+                type="number"
+                id="duty_days"
+                name="duty_days"
+              />
+              <br />
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label for="stuff_salary">Mobile:</label>
+              <input
+                value="{{ stuff.stuff_mobile }}"
+                style="width: 15rem"
+                class="form-control"
+                type="text"
+                id="stuff_mobile"
+                name="stuff_mobile"
+              />
+              <br />
+              <label for="stuff_salary">Address:</label>
+              <input
+                value="{{ stuff.stuff_address }}"
+                required
+                style="width: 15rem"
+                class="form-control"
+                type="text"
+                id="stuff_address"
+                name="stuff_address"
+              />
+              <br />
+            </div>
+          </div>
+
+          <input type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+      </form>
+    </div>
+    {% include 'main/footer.html' %}
+  </body>
+</html>

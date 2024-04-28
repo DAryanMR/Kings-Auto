@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Cost</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Edit Cost</h3>
+      <form action="{% url 'update_cost' cost.cost_id %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <input
+            required
+            class="form-control"
+            placeholder="Cost Name:"
+            type="text"
+            id="cost_name"
+            name="cost_name"
+            value="{{cost.cost_name}}"
+          />
+          <br />
+          <input
+            required
+            class="form-control"
+            placeholder="Cost Amount:"
+            type="number"
+            id="cost_amount"
+            name="cost_amount"
+            value="{{cost.cost_amount}}"
+          />
+          <br />
+        </div>
+
+        <input type="submit" value="Submit" class="btn btn-primary" />
+      </form>
+    </div>
+
+    {% include 'main/footer.html' %}
+  </body>
+</html>

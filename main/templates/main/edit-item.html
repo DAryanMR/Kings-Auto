@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Item</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Edit Item</h3>
+      <form action="{% url 'update_item' item.item_id %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <input
+            required
+            class="form-control"
+            placeholder="Item Name:"
+            type="text"
+            id="item_name"
+            name="item_name"
+            value="{{item.item_name}}"
+          />
+          <br />
+
+          <input
+            required
+            class="form-control"
+            placeholder="Item Cost:"
+            type="number"
+            id="item_cost"
+            name="item_cost"
+            value="{{item.item_cost}}"
+          />
+          <br />
+
+          <input
+            required
+            class="form-control"
+            placeholder="Item Charge:"
+            type="number"
+            id="item_charge"
+            name="item_charge"
+            value="{{item.item_charge}}"
+          />
+          <br />
+        </div>
+
+        <input type="submit" value="Submit" class="btn btn-primary" />
+      </form>
+    </div>
+    {% include 'main/footer.html' %}
+  </body>
+</html>

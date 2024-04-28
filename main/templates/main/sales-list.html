@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Sales</h3>
+      {% regroup sales by memo_id as memo_sales %}
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Memo</th>
+            <th>Sale</th>
+            <th>Date</th>
+            <th>Mobile</th>
+            <th>Car</th>
+            <th>Registration</th>
+            <th>Service</th>
+            <th>Serviceman</th>
+            <th>Total</th>
+            <th>Method</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for memo in memo_sales %} {% for sale in memo.list %}
+          <tr>
+            {% if forloop.first %}
+            <td rowspan="{{ memo.list|length }}">{{ memo.grouper }}</td>
+            {% endif %}
+            <td>{{ sale.sale_id }}</td>
+            <td>{{ sale.sale_date }}</td>
+            <td>{{ sale.customer_name }}</td>
+            <td>{{ sale.car_name }}</td>
+            <td>{{ sale.car_reg }}</td>
+            <td>{{ sale.service.service_name }}</td>
+            <td>{{ sale.stuff.stuff_name }}</td>
+            <td>{{ sale.sale_total }}</td>
+            <td>{{ sale.payment_method }}</td>
+            <td>
+              <a
+                href="{% url 'delete_sale' sale.sale_id %}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+            </td>
+          </tr>
+          {% endfor %} {% empty %}
+          <tr>
+            <td colspan="12">No sales data available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        {% if sales.has_previous %}
+        <a href="?page={{ sales.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <div class="page-navigation">
+          <form action="" method="GET">
+            <input
+              type="number"
+              name="page"
+              min="1"
+              max="{{ paginator.num_pages }}"
+              value="{{ sales.number }}"
+              class="page-input"
+            />
+            <button type="submit" class="page-button">Go</button>
+          </form>
+        </div>
+
+        <span style="margin-right: 3%; margin-left: 3%" class="current-page">
+          Page {{ sales.number }} / {{ paginator.num_pages }}
+        </span>
+
+        {% if sales.has_next %}
+        <a href="?page={{ sales.next_page_number }}">Next</a>
+        {% endif %}
+      </div>
+      <script>
+        document
+          .getElementById("paginationForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent the form from submitting normally
+
+            var pageInput = document.querySelector(".page-input");
+            var numPage = pageInput.value;
+
+            var formAction = this.getAttribute("action");
+            var urlWithParams = formAction + "?page=" + numPage;
+
+            window.location.href = urlWithParams; // Redirect to the new URL with the page parameter
+          });
+      </script>
+    </div>
+    {% include 'main/footer.html' %}
+  </body>
+</html>

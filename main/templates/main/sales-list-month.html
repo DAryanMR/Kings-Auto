@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container">
+      <h3 class="text-center">Sales - {{ month }}</h3>
+      {% if sales %} {% for sale in sales %} {% if sale.1 %}
+      <div style="border: 1px solid black" class="container">
+        <h2>{{ sale.0 }}</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Monthly Sale Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sale_date, monthly_sale_total in sale.1 %}
+            <tr>
+              <td>{{ sale_date }}</td>
+              <td>{{ monthly_sale_total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2">No sales data available for this service.</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td><strong>Service Total:</strong></td>
+              <td><strong>{{ sale.2 }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+      </div>
+
+      {% if forloop.last %}
+      <!-- Check if it's the last iteration -->
+      <div class="grand-total">
+        <strong>Grand Total: {{ grand_total }}</strong> 
+      </div>
+      {% endif %} {% if sale.1.has_other_pages %}
+      <div class="pagination">
+        <span class="step-links">
+          {% if sale.1.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ sale.1.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span class="current-page">{{ sale.1.number }}</span>
+
+          {% if sale.1.has_next %}
+          <a href="?page={{ sale.1.next_page_number }}">next</a>
+          <a href="?page={{ sale.1.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      {% endif %} {% else %}
+      <p>No sales data available for this service.</p>
+      {% endif %} {% endfor %} {% else %}
+      <p>No sales data available.</p>
+      {% endif %}
+    </div>
+    {% include 'main/footer.html' %}
+  </body>
+</html>

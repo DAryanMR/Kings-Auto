@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Salary View</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- jQuery library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    {% include 'main/navbar.html' %}
+    <br />
+    <div class="jumbotron container text-center">
+      <h1>Reports</h1>
+      <br />
+
+      <div class="container col-sm-4" style="padding: 5px">
+        <div class="row">
+          <div class="col">
+            <div class="dropdown">
+              <button
+                style="width: 100%"
+                class="btn btn-primary dropdown-toggle"
+                type="button"
+                id="saleDropdown"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Sale
+              </button>
+              <div class="dropdown-menu" aria-labelledby="saleDropdown">
+                <a class="dropdown-item" href="{% url 'sales_list' %}"
+                  >Daily Sale</a
+                >
+                <a class="dropdown-item" href="{% url 'sales_list_month' %}"
+                  >Monthly Sale</a
+                >
+                <a class="dropdown-item" href="{% url 'sales_list_all' %}"
+                  >All Sale</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="dropdown">
+              <button
+                style="width: 100%"
+                class="btn btn-primary dropdown-toggle"
+                type="button"
+                id="costDropdown"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Cost
+              </button>
+              <div class="dropdown-menu" aria-labelledby="costDropdown">
+                <a class="dropdown-item" href="{% url 'costs_list_day' %}"
+                  >Daily Costs</a
+                >
+                <a class="dropdown-item" href="{% url 'costs_list_month' %}"
+                  >Monthly Costs</a
+                >
+                <a class="dropdown-item" href="{% url 'costs_list' %}"
+                  >All Costs</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+          <div class="col">
+            <a
+              class="btn btn-primary"
+              href="{% url 'dues_list' %}"
+              style="width: 100%"
+              >Dues</a
+            >
+          </div>
+
+          <div class="col">
+            <a
+              class="btn btn-primary"
+              href="{% url 'salary_view' %}"
+              style="width: 100%"
+              >Salary</a
+            >
+          </div>
+        </div>
+
+        <br />
+        <div class="row">
+          <div class="col">
+            <a
+              class="btn btn-primary"
+              href="{% url 'item_list' %}"
+              style="width: 100%"
+              >Items</a
+            >
+          </div>
+
+          <div class="col">
+            <a
+              class="btn btn-primary"
+              href="{% url 'service_list' %}"
+              style="width: 100%"
+              >Services</a
+            >
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <a
+              class="btn btn-primary"
+              href="{% url 'stuff_list' %}"
+              style="width: 100%"
+              >Stuffs</a
+            >
+        </div>
+        <br />
+        <div class="row">
+          <a
+            class="btn btn-primary"
+            href="{% url 'monthly_statement' %}"
+            style="width: 100%"
+            >Cash Sale Statement</a
+          >
+        </div>
+        <br />
+        <div class="row">
+          <a
+            class="btn btn-primary"
+            href="{% url 'stock_list' %}"
+            style="width: 100%"
+            >Stock</a
+          >
+        </div>
+        <br />
+        <div class="row">
+          <a
+            class="btn btn-primary"
+            href="{% url 'jobcard_list' %}"
+            style="width: 100%"
+            >Jobcards</a
+          >
+        </div>
+      </div>
+    </div>
+
+    {% include 'main/footer.html' %}
+  </body>
+</html>

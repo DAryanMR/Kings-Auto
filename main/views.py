@@ -190,7 +190,7 @@ def delete_item(request, item_id):
 
         item.delete()
 
-        return redirect('service_list')
+        return redirect('item_list')
 
     return redirect("index")
 

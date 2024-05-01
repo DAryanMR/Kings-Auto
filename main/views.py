@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db.models import Sum, Max, Q, F
@@ -384,7 +385,7 @@ def create_sale(request):
                     stuff_id = int(value)
 
                     stuff_value = request.POST.get(f'stuff_value{unique_id}')
-                    print("STUUUTUUUTUUUUTUUUUUU", stuff_id, stuff_value)
+                    # print("STUUUTUUUTUUUUTUUUUUU", stuff_id, stuff_value)
                     customer_name = request.POST.get(
                         'customer-name{}'.format(unique_id))
                     car_name = request.POST.get('car-name{}'.format(unique_id))
@@ -707,9 +708,9 @@ def create_salary(request):
                     received = float(salaries.aggregate(
                         Sum("total"))["total__sum"]) + total
 
-                print("Received:", received)
-                print("Stuff Salary:", stuff_salary)
-                print("Total:", total)
+                # print("Received:", received)
+                # print("Stuff Salary:", stuff_salary)
+                # print("Total:", total)
 
                 if received is not None and received >= stuff_salary:
                     paid_status = True
@@ -757,7 +758,7 @@ def update_salary(request, salary_id):
             _received = request.POST.get('new_tt')
             stuff_salary = float(stuff.stuff_salary)
 
-            print("tttt",  _received, stuff_salary)
+            # print("tttt",  _received, stuff_salary)
             if _received >= stuff_salary:
                 salary.paid_status = True
             else:
@@ -1050,7 +1051,7 @@ def update_stock(request, stock_id):
         if request.method == 'POST':
             quantity = request.POST.get(f'qty{stock_id}')
 
-            print("QTY", quantity)
+            # print("QTY", quantity)
 
             stock.qty = quantity
             stock.save()
@@ -1327,23 +1328,31 @@ def delete_jobcard(request, order_id):
 def monthly_statement(request):
     if globals.is_logged_in:
         current_date = date.today()
+        if current_date.day < 10:
+            # If the current date is before the 10th, calculate for the previous month
+            current_date = current_date.replace(
+                month=current_date.month-1, day=10)
+        else:
+            # If the current date is the 10th or after, calculate for the current month
+            current_date = current_date.replace(day=10)
+
         # Calculate sale total grouped by sale_date
-        sales = Sale.objects.filter(sale_date__month=current_date.month) \
+        sales = Sale.objects.filter(sale_date__range=(current_date, current_date+relativedelta(months=1)-relativedelta(days=1))) \
             .values('sale_date') \
             .annotate(sale_total=Sum('sale_total'))
 
         # Calculate cost total grouped by cost_date
-        costs = Cost.objects.filter(cost_date__month=current_date.month) \
+        costs = Cost.objects.filter(cost_date__range=(current_date, current_date+relativedelta(months=1)-relativedelta(days=1))) \
             .values('cost_date') \
             .annotate(cost_total=Sum('cost_amount'))
 
         # Calculate salary total grouped by salary_date
-        salaries = Salary.objects.filter(salary_date__month=current_date.month) \
+        salaries = Salary.objects.filter(salary_date__range=(current_date, current_date+relativedelta(months=1)-relativedelta(days=1))) \
             .values('salary_date') \
             .annotate(salary_total=Sum('total'))
 
         # Calculate due received total grouped by due_date
-        dues = Dues.objects.filter(due_date__month=current_date.month) \
+        dues = Dues.objects.filter(due_date__range=(current_date, current_date+relativedelta(months=1)-relativedelta(days=1))) \
             .values('due_date') \
             .annotate(due_received_total=Sum('due_received'))
 
@@ -1403,7 +1412,9 @@ def monthly_statement(request):
 
         # Calculate today's profit if today's date is in the daily statement
         today_profit = 0
-        today_date = current_date
+        # today_date = current_date + \
+        #     relativedelta(months=1) - relativedelta(days=1)
+        today_date = date.today()
         if today_date in daily_statement:
             today_sale_total = daily_statement[today_date].get('sale_total', 0)
             today_cost_total = daily_statement[today_date].get('cost_total', 0)
@@ -1416,7 +1427,7 @@ def monthly_statement(request):
             today_profit = (today_sale_total + today_due_received_total) - \
                 (today_cost_total + today_salary_total)
 
-        # Pass the grand totals and today's profit to the template
+        # Pass the grand totals andtoday's profit to the template
         context = {
             'statement': sorted_statement,
             'grand_sale_total': grand_sale_total,

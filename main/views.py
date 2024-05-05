@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db.models import Sum, Max, Q, F
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from .models import Item, Car, Service, Sale, Dues, Stuff, Salary, Cost, Stock, Jobcard, CustomerRequest, Diagnosis, IssueDemand, IssueDemandEngineer
 from .forms import SaleForm
 from django.contrib import messages
@@ -613,63 +613,93 @@ def salary_view(response):
     return redirect("index")
 
 
+# Define get_date_range function (as above)
+def get_date_range(current_date):
+    """Calculate the date range from the 10th of the current month to the 9th of the next month."""
+    # Set the start date to the 10th of the current month
+    if current_date.day >= 10:
+        start_date = current_date.replace(day=10)
+    else:
+        # If the current date is before the 10th, set the start date to the 10th of the previous month
+        start_date = current_date.replace(day=10)
+        start_date = start_date - relativedelta(months=1)
+
+    # Calculate the end date as the 9th of the next month
+    end_date = start_date + relativedelta(months=1, days=-1)
+
+    return start_date, end_date
+
+# Modify the salary_report function
+
+
 def salary_report(request, stuff_id):
     if globals.is_logged_in:
-        stuff_id = get_object_or_404(Stuff, stuff_id=stuff_id)
-        total_salary = stuff_id.stuff_salary
+        stuff = get_object_or_404(Stuff, stuff_id=stuff_id)
+        total_salary = stuff.stuff_salary
 
-        current_month = datetime.now().month
-        current_year = datetime.now().year
+        # Use the get_date_range function to calculate the date range
+        current_date = date.today()  # Change this to current_date instead of datetime.now()
+        start_date, end_date = get_date_range(current_date)
 
+        # Query for salaries within the date range
         salaries = Salary.objects.filter(
-            stuff_id=stuff_id, salary_date__month=current_month, salary_date__year=current_year)
+            stuff=stuff,
+            salary_date__range=(start_date, end_date)
+        )
 
-        if salaries:
-            received = salaries.aggregate(Sum("total"))["total__sum"]
-        else:
-            received = 0
-
+        # Calculate received salary and remaining salary
+        received = salaries.aggregate(Sum("total"))["total__sum"] or 0
         remaining = total_salary - received
 
+        # Prepare data for the template
         salary_data = {
-            'stuff': stuff_id.stuff_name,
-            "total": total_salary,
-            "received": received or 0,
+            'stuff': stuff.stuff_name,
+            'total': total_salary,
+            'received': received,
             'remaining': remaining,
             'status': received >= total_salary,
+            'start_date': start_date,
+            'end_date': end_date
         }
 
         return render(request, 'main/salary-report.html', salary_data)
 
     return redirect("index")
 
+# Modify the getSalaryInfo function
+
 
 def getSalaryInfo(request, stuff_id):
     if globals.is_logged_in:
-        stuff_id = get_object_or_404(Stuff, stuff_id=stuff_id)
-        total_salary = stuff_id.stuff_salary
+        stuff = get_object_or_404(Stuff, stuff_id=stuff_id)
+        total_salary = stuff.stuff_salary
 
-        current_month = datetime.now().month
-        current_year = datetime.now().year
+        # Use the get_date_range function to calculate the date range
+        current_date = date.today()  # Change this to current_date instead of datetime.now()
+        start_date, end_date = get_date_range(current_date)
 
+        # Query for salaries within the date range
         salaries = Salary.objects.filter(
-            stuff_id=stuff_id, salary_date__month=current_month, salary_date__year=current_year)
+            stuff=stuff,
+            salary_date__range=(start_date, end_date)
+        )
 
-        if salaries:
-            received = salaries.aggregate(Sum("total"))["total__sum"]
-        else:
-            received = 0
-
+        # Calculate received salary and remaining salary
+        received = salaries.aggregate(Sum("total"))["total__sum"] or 0
         remaining = total_salary - received
 
+        # Prepare data for the JSON response
         salary_data = {
-            'stuff': stuff_id.stuff_name,
-            "total": total_salary,
-            "received": received or 0,
+            'stuff': stuff.stuff_name,
+            'total': total_salary,
+            'received': received,
             'remaining': remaining,
             'status': received >= total_salary,
+            'start_date': start_date,
+            'end_date': end_date
         }
 
+        # Return data as a JSON response
         return JsonResponse(salary_data)
 
     return redirect("index")
@@ -1427,7 +1457,72 @@ def monthly_statement(request):
             today_profit = (today_sale_total + today_due_received_total) - \
                 (today_cost_total + today_salary_total)
 
-        # Pass the grand totals andtoday's profit to the template
+        # New feature: Calculate monthly totals and profits
+        # Calculate the date range for the last 12 months
+        months_range = [
+            current_date - relativedelta(months=month) for month in range(11, -1, -1)]
+
+        # Prepare list to hold monthly data
+        monthly_totals = []
+
+        # Iterate through each month
+        for month_date in months_range:
+            # Set the start and end date for the current month
+            month_start_date = month_date.replace(day=1)
+            month_end_date = month_start_date + \
+                relativedelta(months=1) - relativedelta(days=1)
+
+            # Calculate monthly sales total
+            monthly_sale_total = Sale.objects.filter(sale_date__range=(month_start_date, month_end_date)) \
+                .aggregate(monthly_sale_total=Sum('sale_total'))['monthly_sale_total'] or 0
+
+            # Calculate monthly cost total
+            monthly_cost_total = Cost.objects.filter(cost_date__range=(month_start_date, month_end_date)) \
+                .aggregate(monthly_cost_total=Sum('cost_amount'))['monthly_cost_total'] or 0
+
+            # Calculate monthly salary total
+            monthly_salary_total = Salary.objects.filter(salary_date__range=(month_start_date, month_end_date)) \
+                .aggregate(monthly_salary_total=Sum('total'))['monthly_salary_total'] or 0
+
+            # Calculate monthly due received total
+            monthly_due_received_total = Dues.objects.filter(due_date__range=(month_start_date, month_end_date)) \
+                .aggregate(monthly_due_received_total=Sum('due_received'))['monthly_due_received_total'] or 0
+
+            # Calculate monthly profit
+            monthly_profit = monthly_sale_total + monthly_due_received_total - \
+                (monthly_cost_total + monthly_salary_total)
+
+            # Store monthly totals and profit in the list
+            monthly_totals.append({
+                'month_date': month_date,
+                'sale_total': monthly_sale_total,
+                'cost_total': monthly_cost_total,
+                'salary_total': monthly_salary_total,
+                'due_received_total': monthly_due_received_total,
+                'profit': monthly_profit
+            })
+
+        # Define the order of months
+        month_order = [
+            "January", "February", "March", "April",
+            "May", "June", "July", "August",
+            "September", "October", "November", "December"
+        ]
+
+        grand_profit_total = 0
+        # Add month names to monthly totals
+        for total in monthly_totals:
+            total['month_name'] = total['month_date'].strftime('%B')
+
+            # add month's profit to grand yearly total
+            grand_profit_total += float(total['profit'])
+
+        # Sort monthly totals based on the order of months in month_order
+        monthly_totals.sort(key=lambda x: month_order.index(x['month_name']))
+
+        # Now the monthly_totals list is sorted in the desired order
+
+        # Pass the grand totals, monthly totals, and today's profit to the template
         context = {
             'statement': sorted_statement,
             'grand_sale_total': grand_sale_total,
@@ -1435,7 +1530,10 @@ def monthly_statement(request):
             'grand_salary_total': grand_salary_total,
             'grand_due_received_total': grand_due_received_total,
             'profit': grand_profit,
-            'today_profit': today_profit,  # Include today's profit in the context
+            'today_profit': today_profit,
+            # Include monthly totals and profit in the context
+            'monthly_totals': monthly_totals,
+            'grand_profit_total': grand_profit_total,
         }
 
         return render(request, 'main/monthly-statement.html', context)

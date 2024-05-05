@@ -106,7 +106,34 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- New section to display 12-month profit -->
+      <div class="mt-4">
+        <h4>12-Month Profit Overview</h4>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Profit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for monthly_total in monthly_totals %}
+            <tr>
+              <td>{{ monthly_total.month_date }}</td>
+              <td>{{ monthly_total.profit|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+            <!-- Row for grand total of profit -->
+            <tr>
+              <td><strong>Grand Total Profit</strong></td>
+              <td><strong>{{ grand_profit_total|floatformat:2 }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
     {% include 'main/footer.html' %}
   </body>
 </html>
